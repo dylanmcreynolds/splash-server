@@ -1,11 +1,14 @@
 from typing import Dict, List
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
-class Team(BaseModel):
+class NewTeam(BaseModel):
     name: str
     members: Dict[str, List[str]]  # uid, role
 
+    class Config:
+        extra = Extra.forbid
 
-class NewTeam(Team):
+
+class Team(NewTeam):
     uid: str

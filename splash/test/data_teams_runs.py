@@ -43,6 +43,7 @@ catalog = {
 teams_raw = [
     {
         'name': 'la_vie_claire',
+        'uid': 'foobar',
         'members': {
             'lemond': ['member', 'leader'],
             'hinault': ['member', 'leader', 'owner'],

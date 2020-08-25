@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 from typing import Optional
 
 
@@ -16,6 +16,9 @@ class NewCompound(BaseModel):
     chem_reference: Optional[str]
     purchase_options: Optional[str]
     contributors: Optional[str]
+
+    class Config:
+        extra = Extra.forbid
 
 
 class Compound(NewCompound):

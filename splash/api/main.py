@@ -1,7 +1,7 @@
 from starlette.config import Config
 from fastapi import FastAPI
 from .config import ConfigStore
-from .routers import users, auth, compounds, runs
+from .routers import users, auth, compounds, runs, teams
 from splash.service import ServiceProvider
 from splash.api import set_service_provider, get_service_provider
 
@@ -54,5 +54,12 @@ app.include_router(
     runs.router,
     prefix="/api/v1/runs",
     tags=["runs"],
+    responses={404: {"description": "Not found"}}
+)
+
+app.include_router(
+    teams.router,
+    prefix="/api/v1/teams",
+    tags=["teams"],
     responses={404: {"description": "Not found"}}
 )
