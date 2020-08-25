@@ -33,7 +33,7 @@ def read_catalog(
             catalog_name: str = Path(..., title="name of catalog"),
             current_user: UserModel = Security(get_current_user)):
     try:
-        runs = services().runs.get_runs(catalog_name)
+        runs = services().runs.get_runs(current_user, catalog_name)
     except CatalogDoesNotExist as e:
         raise HTTPException(404, detail=e.args[0])
 
