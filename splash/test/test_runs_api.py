@@ -36,7 +36,7 @@ def convert_raw(data):
 
 @pytest.fixture
 def mock_data(monkeypatch):
-    monkeypatch.setattr('splash.service.runs_service.project', mock_project)
+    monkeypatch.setattr('splash.service.runs_service.project_xarray', mock_project)
     monkeypatch.setattr('splash.service.runs_service.catalog', root_catalog,)
 
 
@@ -126,3 +126,4 @@ def test_get_image_metadata_doesnt_exist(api_url_root, splash_client: TestClient
 def test_get_image_doesnt_exist(api_url_root, splash_client: TestClient, token_header, mock_data):
     response = splash_client.get(api_url_root + "/runs/mordor_research/orc-mark-3-uid/image?frame=50", headers=token_header)
     assert response.status_code == 400
+
