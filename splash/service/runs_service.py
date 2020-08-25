@@ -1,7 +1,7 @@
 from typing import List
 from databroker import catalog
 from databroker.core import BlueskyRun
-from splash.service.projector.projector import project
+from databroker.projector import project_xarray
 import sys
 import numpy as np
 from PIL import Image, ImageOps
@@ -64,7 +64,7 @@ class RunsService():
     def list_root_catalogs(self):
         return list(catalog)
 
-    def get_runs(self, catalog_name) -> List:
+    def get_runs(self, current_user: dict, catalog_name) -> List:
         if catalog_name not in catalog:
             raise CatalogDoesNotExist(f'Catalog name: {catalog_name} is not a catalog')
         runs = catalog[catalog_name]
@@ -72,9 +72,12 @@ class RunsService():
         for uid in runs:
             run = {}
             run['uid'] = uid
-            dataset = project(runs[uid])
-            run['num_images'] = dataset[NEX_ENERGY_FIELD].shape[0]
-            run[NEX_SAMPLE_NAME_FIELD] = dataset.attrs[NEX_SAMPLE_NAME_FIELD]
+            # dataset = project(runs[uid])
+            dataset = project_xarray(runs[uid])
+            if 'num_images' in run:
+                run['num_images'] = dataset[NEX_ENERGY_FIELD].shape[0]
+            if NEX_ENERGY_FIELD in run:
+                run[NEX_SAMPLE_NAME_FIELD] = dataset.attrs[NEX_SAMPLE_NAME_FIELD]
             return_runs.append(run)
         return return_runs
 
@@ -88,7 +91,7 @@ def return_dask_dataset(catalog_name, uid):
     if uid not in runs:
         raise RunDoesNotExist(f'Run uid: {uid} does not exist')
 
-    return project(runs[uid])
+    return project_xarray(runs[uid])
 
 
 def validate_frame_num(frame):
