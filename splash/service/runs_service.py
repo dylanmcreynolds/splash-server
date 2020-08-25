@@ -7,6 +7,9 @@ import numpy as np
 from PIL import Image, ImageOps
 import io
 
+from .authorization import TeamRunChecker, Action
+from ..models.users import UserModel
+
 NEX_IMAGE_FIELD = '/entry/instrument/detector/data'
 NEX_ENERGY_FIELD = '/entry/instrument/monochromator/energy'
 NEX_SAMPLE_NAME_FIELD = '/entry/sample/name'
@@ -29,7 +32,8 @@ class FrameDoesNotExist(Exception):
 
 
 class RunsService():
-    def __init__(self):
+    def __init__(self, auth_checker: TeamRunChecker):
+        self._auth_checker = auth_checker
         return
 
     def get_image(self, catalog_name, uid, frame, raw_bytes=False):
@@ -64,7 +68,7 @@ class RunsService():
     def list_root_catalogs(self):
         return list(catalog)
 
-    def get_runs(self, current_user: dict, catalog_name) -> List:
+    def get_runs(self, current_user: UserModel, catalog_name) -> List:
         if catalog_name not in catalog:
             raise CatalogDoesNotExist(f'Catalog name: {catalog_name} is not a catalog')
         runs = catalog[catalog_name]
@@ -72,13 +76,16 @@ class RunsService():
         for uid in runs:
             run = {}
             run['uid'] = uid
-            # dataset = project(runs[uid])
+
+            #  TODO will the team be projected or no?
+            run['team'] = runs[uid].metadata['start']['team']
             dataset = project_xarray(runs[uid])
             if 'num_images' in run:
                 run['num_images'] = dataset[NEX_ENERGY_FIELD].shape[0]
             if NEX_ENERGY_FIELD in run:
                 run[NEX_SAMPLE_NAME_FIELD] = dataset.attrs[NEX_SAMPLE_NAME_FIELD]
-            return_runs.append(run)
+            if self._auth_checker.can_do(current_user, run, Action.RETRIEVE):
+                return_runs.append(run)
         return return_runs
 
 

@@ -1,46 +1,17 @@
-import pytest
-import databroker
+from typing import List
+
 from splash.service.runs_service import RunsService
+from splash.service.authorization import TeamRunChecker
+from splash.models.teams import Team
+from .data_teams_runs import teams, catalog, user_leader, user_owner, user_other_team
 
 
-class MockRun():
-
-    def __init__(self, run_user_id):
-        self.metadata = {
-            'start': {
-                'user_id': run_user_id,
-                'projections': [
-                    {
-                        'name': 'foo',
-                        'version': '1.0',
-                        'configuration': 'why is this required?',
-                        'projection': {
-                            '/user': {
-                                'type': 'linked',
-                                'location': 'configuration',
-                                'field': 'user_id'  # see above
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-
-
-def test_get_runs_auth(monkeypatch):
-    
-    catalog = {
-        "run_catalog": {
-                '85': MockRun('bernard_hinault'),
-                '86': MockRun('greg_lemond'),
-                '87': MockRun('laurent_fignon'),
-                '88': MockRun('laurent_fignon'),
-                '89': MockRun('greg_lemond'),
-        }
-    }
-
-    runs_service = RunsService()
-    # monkeypatch.setattr(runs_service, '_catalog', catalog)
-    monkeypatch.setattr('splash.service.runs_service.catalog', catalog,)
-    runs = runs_service.get_runs({'uid': 'greg_lemond'}, 'run_catalog')
-    assert runs is not None
+def test_get_runs_auth(monkeypatch, mongodb):
+    checker = TeamRunChecker(teams)
+    runs_service = RunsService(checker)
+    # patch the catalog into the service to override stock intake catalog
+    monkeypatch.setattr('splash.service.runs_service.catalog', catalog)
+    runs = runs_service.get_runs(user_leader, list(catalog.keys())[0])
+    assert runs is not None and len(runs) == 2
+    runs = runs_service.get_runs(user_other_team, list(catalog.keys())[0])
+    assert len(runs) == 0

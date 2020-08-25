@@ -13,7 +13,7 @@ class ServiceProvider():
     def __init__(self, db: MongoClient):
         self._users_service = UsersService(MongoCollectionDao(db, 'users'))
         self._compounds_service = CompoundsService(MongoCollectionDao(db, 'compounds'))
-        self._runs_service = RunsService()
+        self._runs_service = RunsService(None)
 
     @property
     def users(self):
