@@ -27,7 +27,7 @@ class UsersService(Service):
         subject : str
             subject id in the authority's system
         """
-        users = list(self.dao.retreive_many(query={
+        users = list(self.dao.retreive_paged(query={
                 "authenticators.email": email
             }))
 

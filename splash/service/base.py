@@ -1,9 +1,6 @@
-import json
-import os
+
 from collections import namedtuple
 from splash.models.users import UserModel
-
-# from pydantic import BaseModel
 
 from splash.data.base import MongoCollectionDao
 
@@ -19,12 +16,6 @@ class Service():
     def __init__(self, dao: MongoCollectionDao):
         self.dao = dao
 
-    # def validate(self, data):
-    #     errors = self.validator.iter_errors(data)
-    #     return_errs = []
-    #     for error in errors:
-    #         return_errs.append(ValidationIssue(error.message, str(error.path), error))
-    #     return return_errs
 
     def create(self, current_user: UserModel, data):
         return self.dao.create(data)
