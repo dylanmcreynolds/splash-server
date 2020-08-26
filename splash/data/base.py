@@ -2,6 +2,11 @@ import logging
 # from bson.objectid import ObjectId
 # from bson.errors import InvalidId
 import uuid
+from typing import List
+from pymongo import IndexModel
+from pymongo.collation import Collation, CollationStrength
+
+DEFAULT_COLLATION = Collation(locale='en_US', strength=CollationStrength.SECONDARY)
 
 class Dao(object):
     '''Interface for CRUD Serverice'''
@@ -12,7 +17,7 @@ class Dao(object):
     def retrive(self, uid):
         raise NotImplementedError
 
-    def retrieve_paged(self, page, query=None, page_size=10):
+    def retrieve_paged(self, skip, query=None, limit=10):
         raise NotImplementedError
 
     def update(self, doc):
@@ -27,12 +32,15 @@ class UidInDictError(KeyError):
 
 
 class MongoCollectionDao(Dao):
+
     ''' Mongo data service for mapping CRUD and search
     operations to a MongoDB. '''
-    def __init__(self, db, collection_name):
+    def __init__(self, db, collection_name, indexes: List[IndexModel] = None):
         self._db = db
         self._collection = db[collection_name]
-       
+        if indexes:
+            self._collection.create_indexes(indexes)
+
     def create(self, doc):
         logging.debug(f"create doc in collection {0}, doc: {1}", self._collection, doc)
         if 'uid' in doc:
@@ -45,12 +53,12 @@ class MongoCollectionDao(Dao):
     def retrieve(self, uid):
         return self._collection.find_one({"uid": uid}, {'_id': False})
 
-    def retrieve_paged(self, page_start=None, query=None, page_size=10):
-        if page_start is not None:
-            # Calculate number of documents to skip
-            skips = page_size * (page_start - 1)
+    def retrieve_paged(self, skip=None, query=None, limit=10):
+        if skip is not None:
             # Skip and limit
-            cursor = self._collection.find({}, {'_id': False}).skip(skips).limit(page_size)
+            cursor = self._collection.find(query, {'_id': False}) \
+                                            .skip(skip).limit(limit) 
+                                            # .collation(DEFAULT_COLLATION)
 
             # Return documents
             return cursor

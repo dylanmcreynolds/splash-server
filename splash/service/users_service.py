@@ -14,7 +14,7 @@ class UsersService(Service):
 
     def __init__(self, dao: MongoCollectionDao):
         super().__init__(dao)
-        self.dao = dao
+        self._dao = dao
 
     def get_user_authenticator(self, email):
         """Fetches a user based on an issuer and subject. Use for example
@@ -27,7 +27,7 @@ class UsersService(Service):
         subject : str
             subject id in the authority's system
         """
-        users = list(self.dao.retreive_paged(query={
+        users = list(self._dao.retrieve_paged(query={
                 "authenticators.email": email
             }))
 
@@ -51,4 +51,4 @@ class UsersService(Service):
         dict
             user info
         """
-        return self.dao.retrieve(uid)
+        return self._dao.retrieve(uid)

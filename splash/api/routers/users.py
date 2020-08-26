@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Security
-# from fastapi.security import OpenIdConnect
+from fastapi import APIRouter, Security, Query
+from typing import Optional
 from pydantic import BaseModel
 from typing import List
 from splash.models.users import UserModel, NewUserModel
@@ -15,8 +15,19 @@ class CreateUserResponse(BaseModel):
 
 @router.get("", tags=["users"], response_model=List[UserModel])
 def read_users(
-            current_user: UserModel = Security(get_current_user)):
-    results = services().users.retrieve_multiple(current_user, 1)
+            current_user: UserModel = Security(get_current_user),
+            skip: int = 0,
+            limit: int = 100,
+            user: Optional[str] = Query(None, max_length=50)):
+
+    if user is not None:
+        query = {
+            "$or": [
+                {'given_name': {'$regex': user, '$options': 'i'}},
+                {'family_name': {'$regex': user, '$options': 'i'}}
+            ]
+        }
+    results = services().users.retrieve_multiple(current_user, skip=skip, limit=limit, query=query)
     return results
 
 

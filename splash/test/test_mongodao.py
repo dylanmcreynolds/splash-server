@@ -26,6 +26,6 @@ def test_retrieve_paged(mongodb):
     assert return_data[0]['user']['name'] == "zaphod"
 
     # with query and a page_size
-    return_data = list(dao.retrieve_paged(0, query={"user.job": "hitchhiker"}, page_size=2))
+    return_data = list(dao.retrieve_paged(0, query={"user.job": "hitchhiker"}, limit=2))
     assert len(return_data) == 2
     assert return_data[0]['user']['job'] == "hitchhiker"

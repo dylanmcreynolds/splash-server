@@ -16,8 +16,10 @@ class CreateTeamResponse(BaseModel):
 
 @router.get("", tags=["teams"], response_model=List[Team])
 def read_teams(
+            skip: int = 0,
+            limit: int = 100,
             current_user: UserModel = Security(get_current_user)):
-    results = services().teams.retrieve_multiple(current_user, 1)
+    results = services().teams.retrieve_multiple(current_user, skip=skip, limit=limit)
     return results
 
 

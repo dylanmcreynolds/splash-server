@@ -25,16 +25,13 @@ class Service():
 
     def retrieve_multiple(self,
                           current_user: UserModel,
-                          page: int,
+                          skip: int = None,
                           query=None,
-                          page_size=10):
-        if not is_integer(page):
-            raise BadPageArgument('Page number must be an integer,\
-                            represented as an integer, string, or float.')
-        if page <= 0:
-            raise BadPageArgument("Page parameter must be positive")
+                          limit=10):
 
-        cursor = self.dao.retrieve_paged(page, query, page_size=0)
+        if skip < 0:
+            raise BadPageArgument("Page parameter must be positive")
+        cursor = self.dao.retrieve_paged(skip=skip, query=query, limit=0)
         return list(cursor)
         # return 
 
@@ -42,13 +39,4 @@ class Service():
         return self.dao.update(data)
 
     def delete(self, current_user: UserModel, uid):
-        raise self.dao.delete(uid)
-
-
-def is_integer(n):
-    try:
-        float(n)
-    except ValueError:
-        return False
-    else:
-        return float(n).is_integer()
+        raise NotImplementedError()
