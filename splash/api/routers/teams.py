@@ -14,7 +14,7 @@ class CreateTeamResponse(BaseModel):
     uid: str
 
 
-@router.get("/", tags=["teams"], response_model=List[Team])
+@router.get("", tags=["teams"], response_model=List[Team])
 def read_teams(
             current_user: UserModel = Security(get_current_user)):
     results = services().teams.retrieve_multiple(current_user, 1)
@@ -29,7 +29,7 @@ def read_team(
     return (Team(**user_json))
 
 
-@router.post("/", tags=['teams'], response_model=CreateTeamResponse)
+@router.post("", tags=['teams'], response_model=CreateTeamResponse)
 def create_team(
                 team: NewTeam,
                 current_user: UserModel = Security(get_current_user)):

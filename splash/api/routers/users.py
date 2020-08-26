@@ -13,7 +13,7 @@ class CreateUserResponse(BaseModel):
     uid: str
 
 
-@router.get("/", tags=["users"], response_model=List[UserModel])
+@router.get("", tags=["users"], response_model=List[UserModel])
 def read_users(
             current_user: UserModel = Security(get_current_user)):
     results = services().users.retrieve_multiple(current_user, 1)
@@ -28,7 +28,7 @@ def read_user(
     return (UserModel(**user_json))
 
 
-@router.post("/", tags=['users'], response_model=CreateUserResponse)
+@router.post("", tags=['users'], response_model=CreateUserResponse)
 def create_user(
                 user: NewUserModel,
                 current_user: UserModel = Security(get_current_user)):
