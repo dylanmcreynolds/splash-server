@@ -1,0 +1,76 @@
+@startuml authorization_sequence_single
+autonumber
+title Authorization Sequence - Single Reource
+
+actor User
+participant "splash.Service PEP" as service
+participant splash.Dao as dao
+participant "vakt.Guard PDP" as guard
+participant "vakt.Storage PIP" as storage
+
+activate service
+    User -> service: get resource
+    service -> dao: fetch resource
+    service -> dao: get user teams
+    service -> service: prepare team metadata
+    activate guard
+        service -> guard: is allowed (user, resource, action)?
+        guard -> storage: get policies
+    deactivate guard
+    service -> User: return
+deactivate service
+@enduml
+
+
+
+@startuml authorization_sequence_multiple
+autonumber
+title Authorization Sequence - Multiple Reources
+actor User
+
+participant "splash.Service PEP" as service
+participant splash.Dao as dao
+participant "vakt.Guard PDP" as guard
+participant "vakt.Storage PIP" as storage
+
+activate service
+    User -> service: get resources
+    service -> dao: fetch resource
+    service -> dao: get user teams
+    service -> service: prepare team metadata
+    loop for each resource
+        activate guard
+            service -> guard: is allowed (user, resource, action)?
+            guard -> storage: get policies
+        deactivate guard
+    end
+    service -> User: return
+deactivate service
+@enduml
+
+@startuml authorization_sequence_multiple_2
+autonumber
+title Authorization Sequence - Multiple Reources 2
+actor User
+
+participant "splash.Service PEP" as service
+participant splash.Dao as dao
+participant "vakt.Guard PDP" as guard
+participant "vakt.Storage PIP" as storage
+
+activate service
+    User -> service: get resources
+    service -> dao: fetch resource team fields
+    service -> dao: get user teams (partial fields)
+    service -> service: prepare team metadata
+    loop for each resource
+        activate guard
+            service -> guard: is allowed (user, resource, action)?
+            guard -> storage: get policies
+        deactivate guard
+    end
+    service -> service: filter response 
+    service -> dao: marshal objects from filtered list
+    service -> User: return
+deactivate service
+@enduml
