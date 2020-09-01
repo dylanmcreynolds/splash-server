@@ -37,3 +37,11 @@ def create_team(
                 current_user: UserModel = Security(get_current_user)):
     uid = services().teams.create(current_user, team.dict())
     return CreateTeamResponse(uid=uid)
+
+
+@router.put("", tags=['teams'])
+def update_team(
+                team: Team,
+                current_user: UserModel = Security(get_current_user)):
+    services().teams.update(current_user, team.dict())
+    return True

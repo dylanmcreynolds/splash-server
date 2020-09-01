@@ -12,3 +12,4 @@ class NewTeam(BaseModel):
 
 class Team(NewTeam):
     uid: str
+    

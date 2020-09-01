@@ -3,6 +3,7 @@ fastapi
 uvicorn
 jsonschema
 google-auth
+graphene
 requests
 python-dotenv
 python-jose[cryptography]
@@ -13,4 +14,4 @@ numpy
 fastapi
 git+git://github.com/als-computing/datahandler_fits@master#egg=databroker-fitshandler
 datadog
-
+vakt
