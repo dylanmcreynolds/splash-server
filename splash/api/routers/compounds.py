@@ -16,7 +16,7 @@ class CreateCompoundResponse(BaseModel):
 
 @router.get("", tags=["compounds"], response_model=List[Compound])
 def read_compounds(current_user: UserModel = Security(get_current_user)):
-    compounds = services().compounds.retrieve_multiple(current_user, 1)
+    compounds = services().compounds.retrieve_multiple(current_user, 0)
     results = parse_obj_as(List[Compound], compounds)
     return results
 
