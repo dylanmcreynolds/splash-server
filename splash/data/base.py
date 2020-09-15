@@ -64,7 +64,7 @@ class MongoCollectionDao(Dao):
             return cursor
 
         else:
-            return self._collection.find(query)
+            return self._collection.find(query, {'_id': False})
 
     # def retreive_many(self, query=None):
     #     from warnings import warn

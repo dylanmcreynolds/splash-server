@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List
 from ..models.teams import Team
 from ..models.users import UserModel
+from ..service.teams_service import TeamsService
 
 
 class Action(Enum):
@@ -17,27 +18,18 @@ class Checker():
         raise NotImplementedError()
 
 
-class TeamRunChecker(Checker):
-    def __init__(self, teams: List[Team]):
+class TeamBasedChecker(Checker):
+    def __init__(self, teams_service: TeamsService):
         super().__init__()
-        self._teams = teams
+        self._teams_service = teams_service
 
     def get_user_teams(self, user: UserModel) -> List[Team]:
-        """returns a list of Teams that the 
-        user has membership in, including all roles
+        teams = self._teams_service.get_user_teams(user.uid)
 
-        Parameters
-        ----------
-        user : UserModel
 
-        Returns
-        -------
-        List[Team]
-
-        """
-        for team in self._teams:
-            if user.uid in team.members:
-                yield team
+class TeamRunChecker(TeamBasedChecker):
+    def __init__(self):
+        super().__init__()
 
     def can_do(self, user: UserModel, run, action: Action):
         if action == Action.RETRIEVE:
@@ -47,11 +39,3 @@ class TeamRunChecker(Checker):
                 if team.name == run['team']:
                     return True
         return False
-
-
-class MongoTeamRunChecker(Checker):
-
-    def __init__(self, db):
-        self._db = db
-        self._teams = None
-

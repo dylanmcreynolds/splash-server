@@ -7,7 +7,7 @@ from .data_teams_runs import teams, catalog, user_leader, user_owner, user_other
 
 
 def test_get_runs_auth(monkeypatch, mongodb):
-    checker = TeamRunChecker(teams)
+    checker = TeamRunChecker()
     runs_service = RunsService(checker)
     # patch the catalog into the service to override stock intake catalog
     monkeypatch.setattr('splash.service.runs_service.catalog', catalog)
