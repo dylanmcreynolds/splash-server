@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from ..service.base import Service
 from ..service.users_service import UsersService
 from ..service.runs_service import RunsService
 from ..service.compounds_service import CompoundsService
@@ -14,6 +15,7 @@ class ServiceProvider():
         self._users_service = UsersService(MongoCollectionDao(db, 'users'))
         self._compounds_service = CompoundsService(MongoCollectionDao(db, 'compounds'))
         self._runs_service = RunsService()
+        self._ingest_mappings_service = Service(MongoCollectionDao(db, 'ingest_mappings'))
 
     @property
     def users(self):
@@ -26,3 +28,7 @@ class ServiceProvider():
     @property
     def runs(self):
         return self._runs_service
+
+    @property
+    def ingest_mappings(self):
+        return self._ingest_mappings_service

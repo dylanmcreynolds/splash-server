@@ -1,9 +1,9 @@
 from starlette.config import Config
 from fastapi import FastAPI
 from .config import ConfigStore
-from .routers import users, auth, compounds, runs
-from splash.service import ServiceProvider
-from splash.api import set_service_provider, get_service_provider
+from .routers import users, auth, compounds, runs, ingest_mappings
+from ..service import ServiceProvider
+from . import set_service_provider, get_service_provider
 
 
 def setup_services():
@@ -45,7 +45,7 @@ app.include_router(
 
 app.include_router(
     compounds.router,
-    prefix="/api/v1/compounds", 
+    prefix="/api/v1/compounds",
     tags=["compounds"],
     responses={404: {"description": "Not found"}}
 )
@@ -54,5 +54,12 @@ app.include_router(
     runs.router,
     prefix="/api/v1/runs",
     tags=["runs"],
+    responses={404: {"description": "Not found"}}
+)
+
+app.include_router(
+    ingest_mappings.router,
+    prefix="/api/v1/ingest_mappings",
+    tags=["ingest mappings"],
     responses={404: {"description": "Not found"}}
 )

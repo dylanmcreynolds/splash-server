@@ -13,15 +13,16 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
                     if not line.startswith('#')]
 setup(
 
-    name='splash-server',  
-    version='0.0.1',
-    description='RESTFul splash for CRUD operations on Splash data', 
+    name='splash-server',
+    version='0.1.1',
+    description='RESTFul splash for CRUD operations on Splash data',
     long_description=long_description,  
-    long_description_content_type='text/markdown', 
-    url='https://github.com/als-computing/splash-server',  
-    author='Dylan McReynolds', 
-    author_email='dmcreynolds@lbl.gov',  
-
+    long_description_content_type='text/markdown',
+    url='https://github.com/als-computing/splash-server',
+    author='Dylan McReynolds',
+    author_email='dmcreynolds@lbl.gov',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[  # Optional
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
@@ -29,14 +30,12 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.7',
     ],
-
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']), 
-    python_requires='>=3.5',
+    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    python_requires='>=3.8',
     install_requires=requirements,
     entry_points={
         'console_scripts': [
             'splash=server:main',
         ],
     },
-
 )
