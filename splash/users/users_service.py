@@ -1,3 +1,6 @@
+from enum import unique
+from pymongo import DESCENDING, TEXT
+
 from ..users import NewUser, User
 from ..service.base import MongoService
 
@@ -12,8 +15,12 @@ class UserNotFoundException(Exception):
 
 class UsersService(MongoService):
 
-    def __init__(self, db, collection_name):
+    def __init__(self, db, collection_name="users"):
         super().__init__(db, collection_name)
+        self._collection.create_index([("$**", TEXT)])
+        self._collection.create_index([("uid", DESCENDING)], unique=True)
+        self._collection.create_index([("given_name", DESCENDING)], unique=False)
+        self._collection.create_index([("family_name", DESCENDING)], unique=False)
 
     def create(self, current_user: User, new_user: NewUser) -> str:
         return super().create(current_user, new_user.dict())
@@ -27,7 +34,12 @@ class UsersService(MongoService):
                           page: int = 1,
                           query=None,
                           page_size=10):
-        cursor = super().retrieve_multiple(current_user, page, query, page_size)
+        query_dict = {}
+        regex_query = {'$regex': query, '$options': 'i'}
+        query_dict["$or"] = [
+                        {"given_name": regex_query},
+                        {"family_name": regex_query}]
+        cursor = super().retrieve_multiple(current_user, page=page, query=query_dict, page_size=page_size)
         for user_dict in cursor:
             yield User(**user_dict)
 

@@ -2,7 +2,7 @@ from attr import dataclass
 from fastapi import APIRouter, Security
 # from fastapi.security import OpenIdConnect
 from pydantic import BaseModel
-from typing import List
+from typing import Generator, List, Optional
 
 from . import User, NewUser
 from .users_service import UsersService
@@ -28,10 +28,13 @@ class CreateUserResponse(BaseModel):
     uid: str
 
 
-@users_router.get("", tags=["users"], response_model=List[User])
+@users_router.get("", tags=["users"]) 
 def read_users(
-            current_user: User = Security(get_current_user)):
-    results = services.users.retrieve_multiple(current_user)
+            page: int = 1,
+            query: Optional[str] = None,
+            page_size=10,
+            current_user: User = Security(get_current_user)) -> Generator[User, None, None]:
+    results = services.users.retrieve_multiple(current_user, page, query, page_size)
     return list(results)
 
 
